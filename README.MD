@@ -10,6 +10,8 @@ ToolGood.Words.Contrast:    字符串搜索对比
 ToolGood.Words.Test:        单元测试
 ToolGood.Words:             本项目源代码
 ```
+#### 版本升级说明：
+已支持 .net standard，删除`IllegalWordsQuickSearch`、`IllegalWordsSearchEx`类。
 
 
 ## 繁体简体互换、全角半角互换、数字转成中文大写、拼音操作
@@ -25,6 +27,8 @@ ToolGood.Words:             本项目源代码
     WordsHelper.ToDBC("ａｂｃＡＢＣ１２３");
     // 数字转成中文大写
     WordsHelper.ToChineseRMB(12345678901.12);
+    // 中文转成数字
+    WordsHelper.ToNumber("壹佰贰拾叁亿肆仟伍佰陆拾柒万捌仟玖佰零壹元壹角贰分");
     // 获取全拼
     WordsHelper.GetPinYin("我爱中国");//WoAiZhongGuo
     // 获取首字母
@@ -52,16 +56,16 @@ ToolGood.Words:             本项目源代码
 注：`PinYinSearchEx`测试28W关键字，总字数147W，内存使用量32M，输出文件38M。
 
 ## 非法词(敏感词)检测（字符串搜索）
-非法词(敏感词)检测类：`StringSearch`、`WordsSearch`、`IllegalWordsSearch`、`IllegalWordsQuickSearch`;
+非法词(敏感词)检测类：`StringSearch`、`StringSearchEx`、`WordsSearch`、`WordsSearchEx`、`IllegalWordsSearch`;
 
-* `StringSearch`: 搜索`FindFirst`方法返回结果为`string`类型。
-* `WordsSearch`: 搜索`FindFirst`方法返回结果为`WordsSearchResult`类型,
+* `StringSearch`、`StringSearchEx`: 搜索`FindFirst`方法返回结果为`string`类型。
+* `WordsSearch`、`WordsSearchEx`: 搜索`FindFirst`方法返回结果为`WordsSearchResult`类型,
 `WordsSearchResult`不仅仅有关键字，还有关键字的开始位置、结束位置，关键字序号等。
-* `IllegalWordsSearch`: 过滤非法词（敏感词）专用类，可设置跳字长度，默认**繁体转简体，全角转半角，忽略大小写，转化特殊数字**，
-搜索`FindFirst`方法返回为`IllegalWordsSearchResult`,有关键字，开始位置、结束位置。
-* `IllegalWordsQuickSearch`: `IllegalWordsSearch`简化版本。
+* `IllegalWordsSearch`: 过滤非法词（敏感词）专用类，可设置跳字长度，默认**繁体转简体，全角转半角，忽略大小写，跳词，重复词，黑名单**，
+搜索`FindFirst`方法返回为`IllegalWordsSearchResult`,有关键字，对应原文，开始、位置，黑名单类型。
+* `IllegalWordsSearch`、`StringSearchEx`、`WordsSearchEx` 使用`Save`、`Load`方法，可以加快初始化。
 * 共同方法有：`SetKeywords`、`ContainsAny`、`FindFirst`、`FindAll`、`Replace`
-
+* `IllegalWordsSearch`独有方法：`SetSkipWords`（设置跳词）、`SetBlacklist`（设置黑名单）。
 
 ``` csharp
     string s = "中国|国人|zg人";
@@ -88,9 +92,9 @@ ToolGood.Words:             本项目源代码
 ##### 性能对比
 执行10万次性能对比，结果如下：
 
-![10W次性能对比](10W次性能对比.png)
+![10W次性能对比](10W次性能对比(20180306).png)
 
-注:C#自带正则很慢，`StringSearch.ContainsAny`是`Regex.IsMatch`效率的1.5万倍。
+注:C#自带正则很慢，`StringSearchEx.ContainsAny`是`Regex.IsMatch`效率的2万倍多。
 
 `Regex.Matches`的运行方式跟`IQueryable`的类似，只返回`MatchCollection`,还没有计算。
 
@@ -156,3 +160,11 @@ ToolGood.Words:             本项目源代码
     [8]: "胡锦涛"
     [9]: "倒台"
     [10]: "黑社会"
+
+
+-----------------------------------
+推荐一款儿童教育小程序《宝宝计分板》，《宝宝计分板》采用积分奖惩制度，量化奖励、惩罚，给孩子一个明确可实现的目标，孩子通过做家务、练字、画画、学唱歌、跑步等任务来获得积分，达到足够积分就可以兑换奖品。
+
+![宝宝计分板](bbjfb.png)
+
+《宝宝计分板》符合以下几个教育心理学，（1）、奖励和惩罚（强化动机理论），（2）、表扬和鼓励（纠正动机、形成目标），（3）、多学多练（从量变到质变），（4）、延迟满足（提升自我控制能力），（5）细化小目标（目标越明确，越容易实现），（6）批评不翻旧账（减少二次伤害）。

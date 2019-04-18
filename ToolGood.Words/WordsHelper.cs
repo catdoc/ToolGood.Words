@@ -10,7 +10,7 @@ namespace ToolGood.Words
     {
         #region 拼音 操作
         /// <summary>
-        /// 获取首字母
+        /// 获取首字母，中文字符集为[0x4E00,0x9FA5]
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -20,7 +20,7 @@ namespace ToolGood.Words
         }
 
         /// <summary>
-        /// 获取拼音全拼  不支持多音
+        /// 获取拼音全拼, 不支持多音,中文字符集为[0x4E00,0x9FA5]
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -36,7 +36,7 @@ namespace ToolGood.Words
         }
 
         /// <summary>
-        /// 获取拼音全拼 支持多音
+        /// 获取拼音全拼,支持多音,中文字符集为[0x4E00,0x9FA5]
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -46,7 +46,7 @@ namespace ToolGood.Words
         }
 
         /// <summary>
-        /// 获取所有拼音
+        /// 获取所有拼音,中文字符集为[0x4E00,0x9FA5]
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
@@ -118,7 +118,7 @@ namespace ToolGood.Words
 
         #region 判断输入是否为中文
         /// <summary>
-        /// 判断输入是否为中文  
+        /// 判断输入是否为中文  ,中文字符集为[0x4E00,0x9FA5]
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
@@ -131,7 +131,7 @@ namespace ToolGood.Words
             }
         }
         /// <summary>
-        /// 判断输入是否全为中文  
+        /// 判断输入是否全为中文,中文字符集为[0x4E00,0x9FA5]
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
@@ -265,6 +265,44 @@ namespace ToolGood.Words
             return Regex.Replace(d, ".", m => "负元空零壹贰叁肆伍陆柒捌玖空空空空空空空分角拾佰仟萬億兆京垓秭穰"[m.Value[0] - '-'].ToString());
         }
 
+        /// <summary>
+        /// 中文转数字（支持中文大写）
+        /// </summary>
+        /// <param name="chineseString"></param>
+        /// <returns></returns>
+        public static decimal ToNumber(string chineseString)
+        {
+            return NumberConventer.ChnToArab(chineseString);
+        }
         #endregion
+
+        #region 转成数字
+        /// <summary>
+        /// 【中文】、【符号】，转成【数字】字符串
+        /// </summary>
+        /// <param name="chineseString"></param>
+        /// <returns></returns>
+        public static string TransitionToNumberString(string chineseString)
+        {
+            var str = new StringBuilder();
+            Dictionary<char, char> dictionary = new Dictionary<char, char>();
+            for (int i = 0; i < Dict.nums1.Length; i++) {
+                dictionary[Dict.nums1[i]] = Dict.nums2[i];
+            }
+
+            for (int i = 0; i < chineseString.Length; i++) {
+                var c = chineseString[i];
+                char outc;
+                if (dictionary.TryGetValue(c,out outc)) {
+                    str.Append(outc);
+                } else {
+                    str.Append(c);
+                }
+            }
+            return str.ToString();
+        }
+
+        #endregion
+
     }
 }

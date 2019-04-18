@@ -13,6 +13,9 @@ namespace ToolGood.Words.Test
         [Test]
         public void GetPinYin()
         {
+            var t = WordsHelper.GetAllPinYin('芃');
+            Assert.AreEqual("Peng", t[0]);
+
             var a = WordsHelper.GetPinYinFast("阿");
             Assert.AreEqual("A", a);
 
@@ -23,7 +26,7 @@ namespace ToolGood.Words.Test
             b = WordsHelper.GetPinYin("秘鲁");
             Assert.AreEqual("BiLu", b);
 
-            
+
 
             var py = WordsHelper.GetPinYinFast("我爱中国");
             Assert.AreEqual("WoAiZhongGuo", py);
@@ -65,6 +68,13 @@ namespace ToolGood.Words.Test
             var t = WordsHelper.ToChineseRMB(12345678901.12);
             Assert.AreEqual("壹佰贰拾叁億肆仟伍佰陆拾柒萬捌仟玖佰零壹元壹角贰分", t);
         }
+        [Test]
+        public void ToNumber()
+        {
+            var t = WordsHelper.ToNumber("壹佰贰拾叁億肆仟伍佰陆拾柒萬捌仟玖佰零壹元壹角贰分");
+            Assert.AreEqual((decimal)12345678901.12, t);
+        }
+
         [Test]
         public void ToSimplifiedChinese()
         {

@@ -7,10 +7,9 @@ namespace ToolGood.Words.internals
 {
     public class TrieNode
     {
-        //public byte Type { get; set; }
         public bool End { get; set; }
-        public List<string> Results { get; set; }
-        private Dictionary<char, TrieNode> m_values;
+        public List<string> Results { get; private set; }
+        internal Dictionary<char, TrieNode> m_values;
         private uint minflag = uint.MaxValue;
         private uint maxflag = uint.MinValue;
 
@@ -29,23 +28,63 @@ namespace ToolGood.Words.internals
             node = null;
             return false;
         }
-
-        public void Add(TreeNode t, TrieNode node)
+        public ICollection<TrieNode> Transitions()
         {
-            var c = t.Char;
-            if (m_values.ContainsKey(c) == false) {
-                if (minflag > c) { minflag = c; }
-                if (maxflag < c) { maxflag = c; }
-                m_values.Add(c, node);
-                foreach (var item in t.Results) {
-                    node.End = true;
-                    if (node.Results.Contains(item)==false) {
-                        node.Results.Add(item);
-                    }
-                }
+            return m_values.Values;
+        }
+
+        public TrieNode Add(char c)
+        {
+            TrieNode node;
+
+            if (m_values.TryGetValue(c, out node)) {
+                return node;
+            }
+
+            if (minflag > c) { minflag = c; }
+            if (maxflag < c) { maxflag = c; }
+
+            node = new TrieNode();
+            m_values[c] = node;
+            return node;
+        }
+
+        public void SetResults(string text)
+        {
+            if (End == false) {
+                End = true;
+            }
+            if (Results.Contains(text)==false) {
+                Results.Add(text);
             }
         }
 
+        public void Merge(TrieNode node, Dictionary<TrieNode, TrieNode> links)
+        {
+            if (node.End) {
+                if (End == false) {
+                    End = true;
+                }
+                foreach (var item in node.Results) {
+                    if (Results.Contains(item) == false) {
+                        Results.Add(item);
+                    }
+                }
+            }
+
+            foreach (var item in node.m_values) {
+    
+                if ( m_values.ContainsKey(item.Key) == false) {
+                    if (minflag > item.Key) { minflag = item.Key; }
+                    if (maxflag < item.Key) { maxflag = item.Key; }
+                    m_values[item.Key] = item.Value;
+                }
+            }
+            TrieNode node2;
+            if (links.TryGetValue(node, out node2)) {
+                Merge(node2, links);
+            }
+        }
 
         public TrieNode[] ToArray()
         {
@@ -55,6 +94,7 @@ namespace ToolGood.Words.internals
             }
             return first;
         }
+
     }
 
 }
